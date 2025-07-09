@@ -14,8 +14,8 @@ public interface UserService {
     List<User> findAllUsers();
     void saveUser(User user);
     void deleteUser(long id);
-    UserDetailsService loadUserByUsername(String username) throws UsernameNotFoundException;
     User findById(long id);
+    User updateUser(User updatedUser, String newPassword);
     boolean isAdmin(User user);
     boolean hasRole(User user, String role);
 

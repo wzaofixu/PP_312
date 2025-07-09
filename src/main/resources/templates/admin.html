@@ -71,6 +71,42 @@
       margin-bottom: 10px;
       font-weight: bold;
     }
+
+
+    .edit-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      width: 50%;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .checkbox-group {
+      margin-top: 10px;
+    }
+
+    .checkbox-item {
+      display: inline-block;
+      margin-right: 15px;
+    }
   </style>
 </head>
 <body>
@@ -87,11 +123,13 @@
   <tr th:each="user : ${allUsers}">
     <td th:text="${user.username}"></td>
     <td>
+      <a th:href="@{/admin/edit/{id}(id=${user.id})}" class="btn btn-success">Edit</a>
       <form th:action="@{/admin/delete_user}" method="post" style="display: inline;">
-        <input type="hidden" name="id" th:value="${user.id}" />
+        <input type="hidden" name="id" th:value="${user.id}"/>
         <button type="submit" class="btn btn-danger">Delete</button>
       </form>
     </td>
+    <td th:text="${#strings.listJoin(user.roles, ', ')}"></td>
   </tr>
   </tbody>
 </table>
@@ -99,6 +137,70 @@
 <div>
   <a href="/login" class="btn btn-danger">Logout</a>
   <a href="/admin/new" class="btn btn-success">Add</a>
+</div>
+
+
+<div th:if="${user != null and user.id != null}" class="edit-form">
+  <h2 style="text-align: center; margin-bottom: 20px;">Edit User</h2>
+  <form th:action="@{/admin/update}" method="post">
+    <input type="hidden" th:field="*{user.id}"/>
+
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" th:field="*{user.username}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" th:field="*{user.password}">
+    </div>
+
+    <div class="form-group">
+      <label>Roles:</label>
+      <div class="checkbox-group">
+        <div th:each="role : ${allRoles}" class="checkbox-item">
+          <input type="checkbox" th:field="*{user.roles}" th:value="${role.id}" th:id="${'role_' + role.id}">
+          <label th:for="${'role_' + role.id}" th:text="${role.name}"></label>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button type="submit" class="btn btn-success">Save</button>
+      <a href="/admin" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
+</div>
+
+
+<div th:if="${user != null and user.id == null}" class="edit-form">
+  <h2 style="text-align: center; margin-bottom: 20px;">Add New User</h2>
+  <form th:action="@{/admin/save}" method="post">
+    <div class="form-group">
+      <label for="newUsername">Username:</label>
+      <input type="text" id="newUsername" th:field="*{user.username}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="newPassword">Password:</label>
+      <input type="password" id="newPassword" th:field="*{user.password}" required>
+    </div>
+
+    <div class="form-group">
+      <label>Roles:</label>
+      <div class="checkbox-group">
+        <div th:each="role : ${allRoles}" class="checkbox-item">
+          <input type="checkbox" th:field="*{user.roles}" th:value="${role.id}" th:id="${'newRole_' + role.id}">
+          <label th:for="${'newRole_' + role.id}" th:text="${role.name}"></label>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+      <button type="submit" class="btn btn-success">Create</button>
+      <a href="/admin" class="btn btn-danger">Cancel</a>
+    </div>
+  </form>
 </div>
 </body>
 </html>
